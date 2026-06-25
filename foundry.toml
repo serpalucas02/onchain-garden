@@ -14,4 +14,4 @@ optimizer_runs = 200
 sepolia = "${SEPOLIA_RPC}"
 
 [etherscan]
-sepolia = { key = "${ETHERSCAN_API_KEY}", url = "https://api-sepolia.etherscan.io/api", chain = 11155111 }
+sepolia = { key = "${ETHERSCAN_API_KEY}", chain = 11155111 }

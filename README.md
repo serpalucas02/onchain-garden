@@ -6,6 +6,16 @@ A fully **on-chain dynamic NFT**: a plant that grows when you water it and wilts
 
 ---
 
+## Live demo
+
+- 🌐 **App:** https://onchain-garden.vercel.app
+- 📜 **Contract (verified):** [`0x26F9…46f8` on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x26f9c68548904b99b18163ad12900cc88f5e46f8#code)
+- 🖼️ **OpenSea (testnet):** [view a plant](https://testnets.opensea.io/assets/sepolia/0x26f9c68548904b99b18163ad12900cc88f5e46f8/1)
+
+Deployed on **Ethereum Sepolia**. To mint your own, connect MetaMask on Sepolia and grab free test ETH from a [faucet](https://cloud.google.com/application/web3/faucet).
+
+---
+
 ## What makes it interesting
 
 - **100% on-chain art.** `tokenURI` builds an SVG and a JSON on the fly and returns them as base64 `data:` URIs. The NFT survives as long as the chain does — no broken IPFS links.
@@ -76,7 +86,7 @@ VRF is for randomness that is *adversarial and economically valuable* (lottery w
 
 ## Run it locally
 
-Needs [Foundry](https://book.getfoundry.sh/) and Node.js. Three terminals:
+The app is wired to **Sepolia** by default. For local anvil dev, point `EXPECTED_CHAIN` (in `app/page.tsx`) and `GARDEN_ADDRESS` / `START_BLOCK` (in `lib/contract.ts`) back to the local `foundry` values, then use three terminals:
 
 ```bash
 # 1. local chain
@@ -109,6 +119,21 @@ src/OnChainGarden.sol   100% lines · 100% statements · 100% branches · 100% f
 
 ---
 
+## Gas
+
+Real numbers from the Sepolia deployment:
+
+| Operation | Gas |
+|-----------|-----|
+| Deploy | 2,861,266 |
+| `mint` | ~114,900 |
+| `water` | ~30,750 |
+| `tokenURI` (read) | 0 — it's a `view`, read off-chain |
+
+The string-heavy on-chain SVG makes the deploy the costly part; minting and watering are cheap. On an L2 like Arbitrum the same gas costs cents — which is exactly where on-chain art belongs.
+
+---
+
 ## Tech stack
 
 Solidity 0.8.24 · Foundry · OpenZeppelin (ERC-721, Base64, Strings) · Next.js · wagmi · viem · TypeScript · Tailwind CSS
@@ -117,5 +142,5 @@ Solidity 0.8.24 · Foundry · OpenZeppelin (ERC-721, Base64, Strings) · Next.js
 
 ## Roadmap
 
-- [ ] Deploy to Arbitrum Sepolia + live demo on Vercel (with a gas-cost breakdown)
+- [x] Deployed & verified on Ethereum Sepolia + live demo on Vercel
 - [ ] "Preview your plant" before minting (the `previewArt` view is already there for it)

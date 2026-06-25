@@ -37,6 +37,17 @@ export const gardenAbi = [
   },
   {
     type: "function",
+    name: "previewArt",
+    stateMutability: "pure",
+    inputs: [
+      { name: "seed_", type: "uint64" },
+      { name: "stage_", type: "uint8" },
+      { name: "thirsty_", type: "bool" },
+    ],
+    outputs: [{ type: "string" }],
+  },
+  {
+    type: "function",
     name: "ownerOf",
     stateMutability: "view",
     inputs: [{ name: "tokenId", type: "uint256" }],

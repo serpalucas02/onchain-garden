@@ -35,12 +35,14 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
   const publicClient = usePublicClient();
+  const galleryClient = usePublicClient({ chainId: EXPECTED_CHAIN.id });
   const { writeContractAsync } = useWriteContract();
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState<bigint | null>(null);
   const [minting, setMinting] = useState(false);
+  const [gallery, setGallery] = useState<string[]>([]);
 
   const deployed = (GARDEN_ADDRESS as string) !== ZERO;
   const wrongNetwork = isConnected && chainId !== EXPECTED_CHAIN.id;
@@ -106,6 +108,25 @@ export default function Home() {
   useEffect(() => {
     loadPlants();
   }, [loadPlants]);
+
+  // Landing showcase: render a few example blooms straight from the contract (no wallet needed).
+  useEffect(() => {
+    if (!galleryClient) return;
+    const seeds = [BigInt("0x100000002"), BigInt("0x010203020300"), BigInt("0x020004040504")];
+    Promise.all(
+      seeds.map(
+        (seed) =>
+          galleryClient.readContract({
+            address: GARDEN_ADDRESS,
+            abi: gardenAbi,
+            functionName: "previewArt",
+            args: [seed, 3, false],
+          }) as Promise<string>
+      )
+    )
+      .then((svgs) => setGallery(svgs.map((svg) => `data:image/svg+xml;base64,${btoa(svg)}`)))
+      .catch(() => {});
+  }, [galleryClient]);
 
   async function mint() {
     setMinting(true);
@@ -180,7 +201,22 @@ export default function Home() {
         )}
 
         {!isConnected && (
-          <p className="text-center text-emerald-800">Connect your wallet to start your garden.</p>
+          <div className="mb-10">
+            {gallery.length > 0 && (
+              <>
+                <p className="mb-4 text-center text-sm font-medium uppercase tracking-wider text-emerald-700">
+                  Every plant is one of a kind
+                </p>
+                <div className="mb-8 flex flex-wrap justify-center gap-4">
+                  {gallery.map((src, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img key={i} src={src} alt={`Example plant ${i + 1}`} className="w-40 rounded-2xl bg-white p-2 shadow-sm" />
+                  ))}
+                </div>
+              </>
+            )}
+            <p className="text-center text-emerald-800">Connect your wallet to start your garden.</p>
+          </div>
         )}
 
         {wrongNetwork && (

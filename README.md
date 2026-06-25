@@ -8,11 +8,10 @@ A fully **on-chain dynamic NFT**: a plant that grows when you water it and wilts
 
 ## Live demo
 
-- 🌐 **App:** https://onchain-garden.vercel.app
+- 🌐 **App:** https://onchain-garden.vercel.app — connect on Sepolia to mint & watch a plant render live
 - 📜 **Contract (verified):** [`0x26F9…46f8` on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x26f9c68548904b99b18163ad12900cc88f5e46f8#code)
-- 🖼️ **OpenSea (testnet):** [view a plant](https://testnets.opensea.io/assets/sepolia/0x26f9c68548904b99b18163ad12900cc88f5e46f8/1)
 
-Deployed on **Ethereum Sepolia**. To mint your own, connect MetaMask on Sepolia and grab free test ETH from a [faucet](https://cloud.google.com/application/web3/faucet).
+Deployed on **Ethereum Sepolia**. To mint your own, connect MetaMask on Sepolia and grab free test ETH from a [faucet](https://cloud.google.com/application/web3/faucet). Since the art and metadata are fully on-chain, the app renders each plant straight from `tokenURI` — no marketplace needed.
 
 ---
 

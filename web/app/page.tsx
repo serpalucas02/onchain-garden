@@ -9,11 +9,11 @@ import {
   usePublicClient,
   useWriteContract,
 } from "wagmi";
-import { foundry } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { BaseError, UserRejectedRequestError } from "viem";
 import { GARDEN_ADDRESS, START_BLOCK, gardenAbi } from "@/lib/contract";
 
-const EXPECTED_CHAIN = foundry; // dev target (anvil). Swap to arbitrumSepolia for the live demo.
+const EXPECTED_CHAIN = sepolia; // live demo target. Use `foundry` for local anvil dev.
 const ZERO = "0x0000000000000000000000000000000000000000";
 
 type Plant = {

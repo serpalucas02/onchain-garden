@@ -1,9 +1,8 @@
-// Local anvil: first deploy from account #0 is always this deterministic address.
-// (Swap it for the testnet address when we deploy the live demo.)
-export const GARDEN_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3" as const;
+// Deployed on Ethereum Sepolia.
+export const GARDEN_ADDRESS = "0x26F9C68548904B99B18163AD12900CC88f5e46f8" as const;
 
-// Block to start scanning Planted events from (0 for anvil; set the deploy block on a testnet).
-export const START_BLOCK = BigInt(0);
+// Block the contract was deployed at — we scan Planted events from here (not from 0).
+export const START_BLOCK = BigInt(11137514);
 
 // Just the bits of the ABI the frontend actually uses.
 export const gardenAbi = [

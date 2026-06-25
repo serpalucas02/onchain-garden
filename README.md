@@ -136,10 +136,3 @@ The string-heavy on-chain SVG makes the deploy the costly part; minting and wate
 ## Tech stack
 
 Solidity 0.8.24 · Foundry · OpenZeppelin (ERC-721, Base64, Strings) · Next.js · wagmi · viem · TypeScript · Tailwind CSS
-
----
-
-## Roadmap
-
-- [x] Deployed & verified on Ethereum Sepolia + live demo on Vercel
-- [ ] "Preview your plant" before minting (the `previewArt` view is already there for it)

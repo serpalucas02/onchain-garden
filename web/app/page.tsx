@@ -40,6 +40,7 @@ export default function Home() {
 
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [busyId, setBusyId] = useState<bigint | null>(null);
   const [minting, setMinting] = useState(false);
   const [gallery, setGallery] = useState<string[]>([]);
@@ -54,54 +55,66 @@ export default function Home() {
       return;
     }
     setLoading(true);
-    try {
-      const logs = await publicClient.getContractEvents({
-        address: GARDEN_ADDRESS,
-        abi: gardenAbi,
-        eventName: "Planted",
-        args: { owner: address },
-        fromBlock: START_BLOCK,
-        toBlock: "latest",
-      });
-
-      const ids = [...new Set(logs.map((l) => (l.args.tokenId as bigint).toString()))].map(BigInt);
-
-      const found: Plant[] = [];
-      for (const id of ids) {
-        // It could have been transferred away, so confirm ownership before showing it.
-        let owner: string;
-        try {
-          owner = (await publicClient.readContract({
-            address: GARDEN_ADDRESS,
-            abi: gardenAbi,
-            functionName: "ownerOf",
-            args: [id],
-          })) as string;
-        } catch {
-          continue;
-        }
-        if (owner.toLowerCase() !== address.toLowerCase()) continue;
-
-        const uri = (await publicClient.readContract({
+    setFailed(false);
+    // Retry with backoff: a cold/flaky RPC can fail the first read, and we don't want
+    // that to look like an empty garden. Keep trying a few times before giving up.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const logs = await publicClient.getContractEvents({
           address: GARDEN_ADDRESS,
           abi: gardenAbi,
-          functionName: "tokenURI",
-          args: [id],
-        })) as string;
-
-        const json = JSON.parse(atob(uri.split(",")[1]));
-        found.push({
-          tokenId: id,
-          image: json.image,
-          name: json.name,
-          stage: attr(json, "Stage"),
-          waterings: attr(json, "Waterings"),
-          status: attr(json, "Status"),
+          eventName: "Planted",
+          args: { owner: address },
+          fromBlock: START_BLOCK,
+          toBlock: "latest",
         });
+
+        const ids = [...new Set(logs.map((l) => (l.args.tokenId as bigint).toString()))].map(BigInt);
+
+        const found: Plant[] = [];
+        for (const id of ids) {
+          // It could have been transferred away, so confirm ownership before showing it.
+          let owner: string;
+          try {
+            owner = (await publicClient.readContract({
+              address: GARDEN_ADDRESS,
+              abi: gardenAbi,
+              functionName: "ownerOf",
+              args: [id],
+            })) as string;
+          } catch {
+            continue;
+          }
+          if (owner.toLowerCase() !== address.toLowerCase()) continue;
+
+          const uri = (await publicClient.readContract({
+            address: GARDEN_ADDRESS,
+            abi: gardenAbi,
+            functionName: "tokenURI",
+            args: [id],
+          })) as string;
+
+          const json = JSON.parse(atob(uri.split(",")[1]));
+          found.push({
+            tokenId: id,
+            image: json.image,
+            name: json.name,
+            stage: attr(json, "Stage"),
+            waterings: attr(json, "Waterings"),
+            status: attr(json, "Status"),
+          });
+        }
+        setPlants(found.sort((a, b) => Number(a.tokenId - b.tokenId)));
+        setLoading(false);
+        return;
+      } catch {
+        if (attempt >= 4) {
+          setFailed(true);
+          setLoading(false);
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 800 * (attempt + 1)));
       }
-      setPlants(found.sort((a, b) => Number(a.tokenId - b.tokenId)));
-    } finally {
-      setLoading(false);
     }
   }, [publicClient, address, deployed]);
 
@@ -242,7 +255,16 @@ export default function Home() {
 
             {loading && <p className="text-center text-emerald-700">Loading your garden…</p>}
 
-            {!loading && plants.length === 0 && (
+            {!loading && failed && (
+              <p className="text-center text-emerald-700">
+                Couldn&apos;t load your garden — the network may be busy.{" "}
+                <button onClick={loadPlants} className="font-semibold underline">
+                  Retry
+                </button>
+              </p>
+            )}
+
+            {!loading && !failed && plants.length === 0 && (
               <p className="text-center text-emerald-700">No plants yet — plant your first seed!</p>
             )}
 

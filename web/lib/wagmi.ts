@@ -9,7 +9,14 @@ export const config = createConfig({
   connectors: [injected()],
   transports: {
     [foundry.id]: http("http://127.0.0.1:8545"),
-    [sepolia.id]: http("https://sepolia.drpc.org"),
+    // Harden the read RPC: extra retries + longer timeout so a cold/flaky first call
+    // doesn't make the app look empty. drpc serves eth_getLogs (needed to find plants).
+    [sepolia.id]: http("https://sepolia.drpc.org", {
+      retryCount: 5,
+      retryDelay: 600,
+      timeout: 20_000,
+      batch: true,
+    }),
   },
   ssr: true,
 });

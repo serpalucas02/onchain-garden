@@ -168,7 +168,7 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col bg-gradient-to-b from-emerald-50 to-lime-100 text-emerald-950">
       {/* top bar */}
-      <header className="flex items-center justify-between px-6 py-4">
+      <header className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6">
         <span className="text-xl font-bold">🌱 On-Chain Garden</span>
         {isConnected ? (
           <button
@@ -187,9 +187,9 @@ export default function Home() {
         )}
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6">
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight">Grow a plant, fully on-chain</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Grow a plant, fully on-chain</h1>
           <p className="mx-auto mt-3 max-w-xl text-emerald-800">
             Each plant&apos;s image and metadata live entirely in the smart contract. Water it to make it grow — neglect
             it and it wilts.

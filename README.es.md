@@ -85,32 +85,7 @@ VRF es para aleatoriedad *adversarial y con valor económico* (ganadores de lote
 
 ---
 
-## Correrlo localmente
-
-La app apunta a **Sepolia** por defecto. Para dev local con anvil, apuntá `EXPECTED_CHAIN` (en `app/page.tsx`) y `GARDEN_ADDRESS` / `START_BLOCK` (en `lib/contract.ts`) a los valores locales de `foundry`, y usá tres terminales:
-
-```bash
-# 1. cadena local
-anvil
-
-# 2. deploy (cae en la address determinística del primer deploy que usa el frontend)
-forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast \
-  --unlocked --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
-
-# 3. frontend
-cd web && npm install && npm run dev   # http://localhost:3000
-```
-
-En MetaMask: agregá la red local (RPC `http://127.0.0.1:8545`, chainId `31337`), importá una cuenta de prueba de anvil, conectá, **Plant a seed** y después **Water** para verla crecer.
-
----
-
 ## Tests
-
-```bash
-forge test           # corre la suite
-forge coverage       # reporte de coverage
-```
 
 La suite cubre happy paths **y el "intentá romperlo"** (control de acceso, reverts, estado basado en tiempo), más un fuzz test sobre los umbrales de crecimiento y un barrido de branches sobre cada variante de arte.
 
